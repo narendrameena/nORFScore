@@ -1,7 +1,6 @@
 ###--------------------------------------------------------------------------------------##
 #
 #@author narumeena
-#@description umap plot class to project the data on UMAP as reduced dimetions
+#@description style the plots 
 #
 ###--------------------------------------------------------------------------------------##
-
