@@ -18,7 +18,7 @@ class readFiles():
         reading bed.gz as panda dataframe function 
 
         :arg filePath: filepath for the bed.gz file
-        :return: panda dataframe
+        :return :data as panda dataframe
 
         """
         df  =   []
