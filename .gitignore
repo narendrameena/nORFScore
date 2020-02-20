@@ -2,3 +2,7 @@
 .snakemake
 .Rproj.*
 R.Rproj*
+.ipynb_checkpoints
+.snakemake
+R.Rproj
+.Rproj.user
