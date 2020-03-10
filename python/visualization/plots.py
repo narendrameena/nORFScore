@@ -1,3 +1,4 @@
+#!/usr/bin/env python3 
 ###--------------------------------------------------------------------------------------##
 #
 #@author narumeena
@@ -23,11 +24,13 @@ def tadCount():
     groupDf =   df.groupby(pd.cut(df[[10]].values.flatten() , bins=ranges,labels=[-10000000,-1000000,-100000,-10000,-1000,0,1000,10000,100000,1000000,10000000], right=False)).count()[1]
     print(groupDf)
     fig, ax = plt.subplots()
-    plt.gcf().subplots_adjust(bottom=0.50)
-    groupDf.plot.bar()
-    ax.set(xlabel='distance', ylabel='# of TAD')
-    ax.set_xticklabels(ax.get_xticklabels(),verticalalignment='baseline')
-    ax.tick_params(axis='x', which='major', pad=130)
+    #plt.gcf().subplots_adjust(bottom=0.50)
+    groupDf.plot.bar(label='')
+    plt.legend((''))
+    plt.xlabel('distance')
+    plt.ylabel('# of TAD')
+    plt.tick_params(axis='x', which='major')
+    plt.tight_layout()
     plt.savefig("../../../figures/tad_count_wrt_to_distance.png")
 
     """ result 
@@ -52,11 +55,13 @@ def promoterCount():
     groupDf =   df.groupby(pd.cut(df[[19]].values.flatten(), bins=ranges,labels=[-10000000,-1000000,-100000,-10000,-1000,0,1000,10000,100000,1000000,10000000], right=False)).count()[1]
     print(groupDf)
     fig, ax = plt.subplots()
-    plt.gcf().subplots_adjust(bottom=0.50)
-    groupDf.plot.bar()
-    ax.set(xlabel='distance', ylabel='# of Promoter and Enhancer')
-    ax.set_xticklabels(ax.get_xticklabels(),verticalalignment='baseline')
-    ax.tick_params(axis='x', which='major', pad=130)
+    #plt.gcf().subplots_adjust(bottom=0.50)
+    groupDf.plot.bar(label='')
+    plt.legend((''))
+    plt.xlabel('distance')
+    plt.ylabel('# of Promoter and Enhancer')
+    plt.tick_params(axis='x', which='major')
+    plt.tight_layout()
     plt.savefig("../../../figures/promotre_count_wrt_to_distance.png")
 
     """
@@ -87,11 +92,13 @@ def openChromatin():
     print(groupDf)
     groupDf = groupDf.set_index('index')
     fig, ax = plt.subplots()
-    plt.gcf().subplots_adjust(bottom=0.50)
-    groupDf.plot.bar()
-    ax.set(xlabel='distance', ylabel='# of OpenChromatin')
-    ax.set_xticklabels(ax.get_xticklabels(),verticalalignment='baseline')
-    ax.tick_params(axis='x', which='major', pad=130)
+    #plt.gcf().subplots_adjust(bottom=0.50)
+    groupDf.plot.bar(label='')
+    plt.legend((''))
+    plt.xlabel('distance')
+    plt.ylabel('# of OpenChromatin')
+    plt.tick_params(axis='x', which='major')
+    plt.tight_layout()
     plt.savefig("../../../figures/OpenChromatin_count_wrt_to_distance.png")
    
 def histonMark():
@@ -109,12 +116,88 @@ def histonMark():
     print(groupDf)
     groupDf = groupDf.set_index('index')
     fig, ax = plt.subplots()
-    plt.gcf().subplots_adjust(bottom=0.50)
-    groupDf.plot.bar()
-    ax.set(xlabel='distance', ylabel='# of Histone_mark')
-    ax.set_xticklabels(ax.get_xticklabels(),verticalalignment='baseline')
-    ax.tick_params(axis='x', which='major', pad=130)
+    #plt.gcf().subplots_adjust(bottom=0.50)
+    groupDf.plot.bar(label='')
+    plt.legend((''))
+    plt.xlabel('distance')
+    plt.ylabel('# of Histone marks')
+    plt.tick_params(axis='x', which='major')
+    plt.tight_layout()
     plt.savefig("../../../figures/Histone_mark_count_wrt_to_distance.png")
+
+
+def geneExpression():
+    chunksize = 10 ** 5
+    ranges  =   [-10000000,-1000000,-100000,-10000,-1000,0,1000,10000,100000,1000000,10000000]
+    groupDf =  pd.DataFrame({'index':ranges,1:[0,0,0,0,0,0,0,0,0,0,0]})
+    for df in pd.read_csv('../../../analysis/encode/Gene_expression_RNA-seq_all.bed.gz',compression='gzip',sep='\t',header=None,error_bad_lines=False, chunksize=chunksize):
+        #sns.countplot()
+        sd = dd.from_pandas(df, npartitions=10)
+        #print(df.head())
+        #sd = dd.from_pandas(df, npartitions=10)
+        ranges  =   [-10000000,-1000000,-100000,-10000,-1000,0,1000,10000,100000,1000000,10000000,np.inf]
+        tmp     =   sd.compute().groupby(pd.cut(df[[16]].values.flatten(), bins=ranges,labels=[-10000000,-1000000,-100000,-10000,-1000,0,1000,10000,100000,1000000,10000000], right=False)).count()[1]
+        groupDf =   pd.concat([groupDf.reset_index(), tmp.reset_index()]).groupby('index')[1].sum().reset_index()
+    #print(groupDf)
+    groupDf = groupDf.set_index('index')
+    fig, ax = plt.subplots()
+    #plt.gcf().subplots_adjust(bottom=0.50)
+    groupDf.plot.bar(label='')
+    plt.legend((''))
+    plt.xlabel('distance')
+    plt.ylabel('# of Exons')
+    plt.tick_params(axis='x', which='major')
+    plt.tight_layout()
+    plt.savefig("../../../figures/Gene_expression_wrt_to_distance.png")
+
+def transFactoreCount():
+    chunksize = 10 ** 5
+    ranges  =   [-10000000,-1000000,-100000,-10000,-1000,0,1000,10000,100000,1000000,10000000]
+    groupDf =  pd.DataFrame({'index':ranges,1:[0,0,0,0,0,0,0,0,0,0,0]})
+    for df in pd.read_csv('../../../analysis/encode/Transcription_factor_binding_TF_ChIP-seq_closest_all.bed',sep='\t',header=None,error_bad_lines=False, chunksize=chunksize): #,compression='gzip'
+        #sns.countplot()
+        sd = dd.from_pandas(df, npartitions=10)
+        #print(df.head())
+        #sd = dd.from_pandas(df, npartitions=10)
+        ranges  =   [-10000000,-1000000,-100000,-10000,-1000,0,1000,10000,100000,1000000,10000000,np.inf]
+        tmp     =   sd.compute().groupby(pd.cut(df[[17]].values.flatten(), bins=ranges,labels=[-10000000,-1000000,-100000,-10000,-1000,0,1000,10000,100000,1000000,10000000], right=False)).count()[1]
+        groupDf =   pd.concat([groupDf.reset_index(), tmp.reset_index()]).groupby('index')[1].sum().reset_index()
+    #print(groupDf)
+    groupDf = groupDf.set_index('index')
+    fig, ax = plt.subplots()
+    #plt.gcf().subplots_adjust(bottom=0.50)
+    groupDf.plot.bar(label='')
+    plt.legend((''))
+    plt.xlabel('distance')
+    plt.ylabel('# of trans_fact_site')
+    plt.tick_params(axis='x', which='major')
+    plt.tight_layout()
+    plt.savefig("../../../figures/Trans_fact_site_wrt_to_distance.png")
+
+
+def dnaMeth():
+    chunksize = 10 ** 5
+    ranges  =   [-10000000,-1000000,-100000,-10000,-1000,0,1000,10000,100000,1000000,10000000]
+    groupDf =  pd.DataFrame({'index':ranges,1:[0,0,0,0,0,0,0,0,0,0,0]})
+    for df in pd.read_csv('../../../analysis/encode/Transcription_factor_binding_TF_ChIP-seq_closest_all.bed',compression='gzip',sep='\t',header=None,error_bad_lines=False, chunksize=chunksize): #,compression='gzip'
+        #sns.countplot()
+        sd = dd.from_pandas(df, npartitions=10)
+        #print(df.head())
+        #sd = dd.from_pandas(df, npartitions=10)
+        ranges  =   [-10000000,-1000000,-100000,-10000,-1000,0,1000,10000,100000,1000000,10000000,np.inf]
+        tmp     =   sd.compute().groupby(pd.cut(df[[17]].values.flatten(), bins=ranges,labels=[-10000000,-1000000,-100000,-10000,-1000,0,1000,10000,100000,1000000,10000000], right=False)).count()[1]
+        groupDf =   pd.concat([groupDf.reset_index(), tmp.reset_index()]).groupby('index')[1].sum().reset_index()
+    #print(groupDf)
+    groupDf = groupDf.set_index('index')
+    fig, ax = plt.subplots()
+    #plt.gcf().subplots_adjust(bottom=0.50)
+    groupDf.plot.bar(label='')
+    plt.legend((''))
+    plt.xlabel('distance')
+    plt.ylabel('# of DNA_Meth_site')
+    plt.tick_params(axis='x', which='major')
+    plt.tight_layout()
+    plt.savefig("../../../figures/meth_site_wrt_to_distance.png")
 
 def example():
     dt    =   {0: 'object', 2: 'int64', 1: 'int64',3:'object',4:'int64',5:'object',6:'object',7:'object',8:'int64',9:'int64',10:'object',11:'int64',12:'object',13:'float64',14:'float64',15:'float64',16:'int64',17:'int64'}
@@ -128,20 +211,21 @@ def example():
     groupDf =   pd.concat([groupDf.reset_index(), groupDf.reset_index()]).groupby('index')[1].sum().reset_index()
     groupDf = groupDf.set_index('index')
     fig, ax = plt.subplots()
-    plt.gcf().subplots_adjust(bottom=0.50)
-    groupDf.plot.bar()
-    ax.set(xlabel='distance', ylabel='# of Histone_mark')
-    ax.set_xticklabels(ax.get_xticklabels(),verticalalignment='baseline')
-    ax.tick_params(axis='x', which='major', pad=130)
+    #plt.gcf().subplots_adjust(bottom=0.50)
+    groupDf.plot.bar(label='')
+    plt.legend((''))
+    plt.xlabel('distance')
+    plt.ylabel('# of Histone marks')
+    plt.tick_params(axis='x', which='major')
+    plt.tight_layout()
     plt.savefig("../../../figures/test.png")
     plt.show()
     
 
 def main():
-    #promoterCount()
-    openChromatin()
-    histonMark()
-    example()
+    #example()
+    transFactoreCount()
+    #geneExpression()
     
 
 if __name__ == "__main__":
