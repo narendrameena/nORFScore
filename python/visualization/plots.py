@@ -154,7 +154,7 @@ def transFactoreCount():
     chunksize = 10 ** 5
     ranges  =   [-10000000,-1000000,-100000,-10000,-1000,0,1000,10000,100000,1000000,10000000]
     groupDf =  pd.DataFrame({'index':ranges,1:[0,0,0,0,0,0,0,0,0,0,0]})
-    for df in pd.read_csv('../../../analysis/encode/Transcription_factor_binding_TF_ChIP-seq_closest_all.bed',sep='\t',header=None,error_bad_lines=False, chunksize=chunksize): #,compression='gzip'
+    for df in pd.read_csv('../../../analysis/encode/Transcription_factor_binding_TF_ChIP-seq_closest_all.bed.gz',compression='gzip',sep='\t',header=None,error_bad_lines=False, chunksize=chunksize): #,compression='gzip'
         #sns.countplot()
         sd = dd.from_pandas(df, npartitions=10)
         #print(df.head())
@@ -179,13 +179,13 @@ def dnaMeth():
     chunksize = 10 ** 5
     ranges  =   [-10000000,-1000000,-100000,-10000,-1000,0,1000,10000,100000,1000000,10000000]
     groupDf =  pd.DataFrame({'index':ranges,1:[0,0,0,0,0,0,0,0,0,0,0]})
-    for df in pd.read_csv('../../../analysis/encode/Transcription_factor_binding_TF_ChIP-seq_closest_all.bed',compression='gzip',sep='\t',header=None,error_bad_lines=False, chunksize=chunksize): #,compression='gzip'
+    for df in pd.read_csv('../../../analysis/encode/DNA_methaylation_hg38_all.bed.gz',compression='gzip',sep='\t',header=None,error_bad_lines=False, chunksize=chunksize): #,compression='gzip'
         #sns.countplot()
         sd = dd.from_pandas(df, npartitions=10)
         #print(df.head())
         #sd = dd.from_pandas(df, npartitions=10)
         ranges  =   [-10000000,-1000000,-100000,-10000,-1000,0,1000,10000,100000,1000000,10000000,np.inf]
-        tmp     =   sd.compute().groupby(pd.cut(df[[17]].values.flatten(), bins=ranges,labels=[-10000000,-1000000,-100000,-10000,-1000,0,1000,10000,100000,1000000,10000000], right=False)).count()[1]
+        tmp     =   sd.compute().groupby(pd.cut(df[[18]].values.flatten(), bins=ranges,labels=[-10000000,-1000000,-100000,-10000,-1000,0,1000,10000,100000,1000000,10000000], right=False)).count()[1]
         groupDf =   pd.concat([groupDf.reset_index(), tmp.reset_index()]).groupby('index')[1].sum().reset_index()
     #print(groupDf)
     groupDf = groupDf.set_index('index')
@@ -224,7 +224,7 @@ def example():
 
 def main():
     #example()
-    transFactoreCount()
+    dnaMeth()
     #geneExpression()
     
 
